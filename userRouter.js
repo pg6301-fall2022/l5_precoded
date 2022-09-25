@@ -23,7 +23,7 @@ loginPath.post("/", (req, res) => {
 
 userPath.get("/", (req, res) => {
     if(!req.user){
-        return res.sendStatus(401);
+        return res.sendStatus(403);
     }
     res.json(USERS);
 });
@@ -33,20 +33,13 @@ userPath.post("/", (req, res) => {
     if(!username || !fullName || !password){
         return res.sendStatus(400);
     }
-    USERS.push({username, fullName, password});
+    USERS.push({ username, fullName, password });
     res.redirect("/");
 });
 
-export const USERS = [
-    {
-        username: "administrator", password: "mostly secret", fullName: "Testsson"
-    },
-    {
-        username: "dummyuser", password: "dummy", fullName: "Randy the Random"
-    }
-];
+export const USERS = [];
 
 export function userMiddleware(req, res, next) {
-    req.user = USERS.find(u => u.username === req.signedCookies.username);
+    req.user = USERS.find(u => u.username === req.signedCookies?.username);
     next();
 }
