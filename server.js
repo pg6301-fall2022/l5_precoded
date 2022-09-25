@@ -3,8 +3,11 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 const app = express();
-app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 
 const users = [
     {
@@ -36,6 +39,8 @@ app.post("/login", (req, res) => {
     }
 
 });
+
+app.use(express.static("public"));
 
 const server = app.listen(process.env.PORT || 3000, () => {
     console.log(`server started at http://localhost:${server.address().port}`);
