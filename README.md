@@ -7,8 +7,8 @@ Express JS web server
   * [x] get request
   * [x] post request
 * [x] JSON
-* [ ] static files
-* [ ] Cookies 
+* [x] static files
+* [x] Cookies 
 * [ ] Express middleware (app.use)
   * [ ] Enforce user is logged in
 * [ ] Routes

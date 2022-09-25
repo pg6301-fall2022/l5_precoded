@@ -1,9 +1,11 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
-app.use(cookieParser());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
@@ -22,7 +24,13 @@ const users = [
 
 app.get("/login", (req, res) => {
     // GET returns some data ( server -> client)
-    const user = users.find(u => u.username === req.cookies.username);
+    const cookieUsername = req.signedCookies.username;
+
+    if(!cookieUsername) {
+        return res.sendStatus(401);
+    }
+
+    const user = users.find(u => u.username === cookieUsername);
     const { fullName, username } = user;
     res.json({ username, fullName });
 });
@@ -36,7 +44,7 @@ app.post("/login", (req, res) => {
     const user = users.find(u => u.username === username);
 
     if(user && user.password === password) {
-        res.cookie("username", username);
+        res.cookie("username", username, {signed: true});
         res.sendStatus(200);
     }
     else {
