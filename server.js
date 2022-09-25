@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import e from "express";
 dotenv.config();
 
 const app = express();
@@ -14,10 +15,14 @@ app.use(bodyParser.urlencoded({
 app.use((req, res, next) => {
     const { username } = req.signedCookies;
     req.user = users.find(u => u.username === username);
-    console.log("before login");
+    console.log("before request");
     next();
-    console.log("after login");
+    console.log("after request");
 });
+
+const loginPath = new express.Router();
+const userPath = new express.Router();
+
 
 
 const users = [
@@ -29,58 +34,44 @@ const users = [
     }
 ]
 
+loginPath.get("/", (req, res) => {
+    const { username } = req.signedCookies;
+    const user = users.find(u => u.username === username);
+    res.json(user);
+});
 
+loginPath.post("/", (req, res) => {
+    const { password, username } = req.body;
+    const user = users.find(u => u.username === username);
+    if(!user || user.password !== password){
+        return res.sendStatus(401);
+    } else {
+        res
+            .cookie("username", user.username, {signed: true})
+            .redirect("/");
+    }
+});
 
-app.get("/login", (req, res) => {
-    // GET returns some data ( server -> client)
-    console.log("In the get function");
-
-    if(!req.user) {
+userPath.get("/", (req, res) => {
+    if(!req.user){
         return res.sendStatus(401);
     }
-
-    const user = users.find(u => u.username === req.user.username);
-    const { fullName, username } = user;
-    res.json({ username, fullName });
+    res.json(users);
 });
 
-app.get("/users", (req, res) => {
-   if(!req.user){
-       // Information is not accessible if not logged in
-       return res.sendStatus(401);
-   }
-   else {
-       res.json(users.map( ({ fullName, username}) => ({username, fullName}) ));
-   }
-});
-
-app.post("/users", (req, res) => {
+userPath.post("/", (req, res) => {
     const { username, fullName, password } = req.body;
     if(!username || !fullName || !password){
         return res.sendStatus(400);
     }
-    users.push({username: username, fullName: fullName, password: password});
+    users.push({username, fullName, password});
     res.redirect("/");
 });
 
-app.post("/login", (req, res) => {
-    // POST sends data (client -> server)
-    // Since POST sends data from client, we can use it to check that password is correct
 
-    const { password, username } = req.body;
 
-    const user = users.find(u => u.username === username);
-
-    if(user && user.password === password) {
-        res
-            .cookie("username", username, {signed: true})
-            .redirect("/");
-    }
-    else {
-        res.sendStatus(401);
-    }
-
-});
+app.use("/login", loginPath);
+app.use("/users", userPath);
 
 app.use(express.static("public"));
 
