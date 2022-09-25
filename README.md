@@ -3,10 +3,10 @@
 Express JS web server
 
 * [x] Setup npm project and express
-* [ ] Respond to simple requests
-  * [ ] get request
-  * [ ] post request
-* [ ] JSON
+* [x] Respond to simple requests
+  * [x] get request
+  * [x] post request
+* [x] JSON
 * [ ] static files
 * [ ] Cookies 
 * [ ] Express middleware (app.use)

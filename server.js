@@ -1,12 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 const users = [
     {
-        username: "admin", password: "mostly secret"
+        username: "administrator", password: "mostly secret", fullName: "Testsson"
     }
 ]
 
@@ -14,20 +16,19 @@ const users = [
 
 app.get("/login", (req, res) => {
     // GET returns some data ( server -> client)
-    res.json({
-        username: "admin"
-    });
+    const user = users.find(u => u.username === req.cookies.username);
+    const { fullName, username } = user;
+    res.json({ username, fullName });
 });
 
 app.post("/login", (req, res) => {
     // POST sends data (client -> server)
     // Since POST sends data from client, we can use it to check that password is correct
 
-    const body = req.body;
-    const username = body.username;
-    const password = body.password;
+    const { password, username } = req.body;
 
     if(users.find(u => u.username === username).password === password) {
+        res.cookie("username", username);
         res.sendStatus(200);
     }
     else {
