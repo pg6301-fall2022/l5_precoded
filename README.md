@@ -11,5 +11,5 @@ Express JS web server
 * [x] Cookies 
 * [x] Express middleware (app.use)
   * [x] Enforce user is logged in
-* [ ] Routes
+* [x] Routes
 * [ ] Testing express code
