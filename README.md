@@ -2,7 +2,7 @@
 
 Express JS web server
 
-* [ ] Setup npm project and express
+* [x] Setup npm project and express
 * [ ] Respond to simple requests
   * [ ] get request
   * [ ] post request
