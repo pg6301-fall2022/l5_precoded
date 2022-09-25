@@ -9,7 +9,7 @@ Express JS web server
 * [x] JSON
 * [x] static files
 * [x] Cookies 
-* [ ] Express middleware (app.use)
-  * [ ] Enforce user is logged in
+* [x] Express middleware (app.use)
+  * [x] Enforce user is logged in
 * [ ] Routes
 * [ ] Testing express code

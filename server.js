@@ -11,6 +11,15 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 
+app.use((req, res, next) => {
+    const { username } = req.signedCookies;
+    req.user = users.find(u => u.username === username);
+    console.log("before login");
+    next();
+    console.log("after login");
+});
+
+
 const users = [
     {
         username: "administrator", password: "mostly secret", fullName: "Testsson"
@@ -24,15 +33,34 @@ const users = [
 
 app.get("/login", (req, res) => {
     // GET returns some data ( server -> client)
-    const cookieUsername = req.signedCookies.username;
+    console.log("In the get function");
 
-    if(!cookieUsername) {
+    if(!req.user) {
         return res.sendStatus(401);
     }
 
-    const user = users.find(u => u.username === cookieUsername);
+    const user = users.find(u => u.username === req.user.username);
     const { fullName, username } = user;
     res.json({ username, fullName });
+});
+
+app.get("/users", (req, res) => {
+   if(!req.user){
+       // Information is not accessible if not logged in
+       return res.sendStatus(401);
+   }
+   else {
+       res.json(users.map( ({ fullName, username}) => ({username, fullName}) ));
+   }
+});
+
+app.post("/users", (req, res) => {
+    const { username, fullName, password } = req.body;
+    if(!username || !fullName || !password){
+        return res.sendStatus(400);
+    }
+    users.push({username: username, fullName: fullName, password: password});
+    res.redirect("/");
 });
 
 app.post("/login", (req, res) => {
@@ -44,8 +72,9 @@ app.post("/login", (req, res) => {
     const user = users.find(u => u.username === username);
 
     if(user && user.password === password) {
-        res.cookie("username", username, {signed: true});
-        res.sendStatus(200);
+        res
+            .cookie("username", username, {signed: true})
+            .redirect("/");
     }
     else {
         res.sendStatus(401);

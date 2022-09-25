@@ -6,10 +6,23 @@
 </head>
 <body>
   <div id="user">
+      Hello stranger
+  </div>
+  <div>
     <a href="login.html">Log In</a>
   </div>
   <div>
     <a href="register.html">Register New User</a>
   </div>
 </body>
+<script>
+    async function fetchUsername() {
+        const res = await fetch("/login");
+        if(res.ok){
+            const {username, fullName} = await res.json();
+            document.getElementById("user").innerHTML = `<div>Hello ${fullName}</div>`
+        }
+    }
+    fetchUsername();
+</script>
 </html>
