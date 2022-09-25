@@ -12,6 +12,9 @@ app.use(bodyParser.urlencoded({
 const users = [
     {
         username: "administrator", password: "mostly secret", fullName: "Testsson"
+    },
+    {
+        username: "dummyuser", password: "dummy", fullName: "Randy the Random"
     }
 ]
 
@@ -30,12 +33,14 @@ app.post("/login", (req, res) => {
 
     const { password, username } = req.body;
 
-    if(users.find(u => u.username === username).password === password) {
+    const user = users.find(u => u.username === username);
+
+    if(user && user.password === password) {
         res.cookie("username", username);
         res.sendStatus(200);
     }
     else {
-        res.send(401);
+        res.sendStatus(401);
     }
 
 });
