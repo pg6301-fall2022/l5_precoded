@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import {userPath, loginPath, userMiddleware} from "./userRouter.js";
+import {userPath, loginPath, userMiddleware, logoutPath} from "./userRouter.js";
 
 dotenv.config();
 
@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({
 app.use(userMiddleware);
 app.use("/login", loginPath);
 app.use("/users", userPath);
+app.use("/logout", logoutPath)
 
 app.use(express.static("public/"));
 

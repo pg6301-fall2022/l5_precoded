@@ -2,6 +2,7 @@ import express from "express";
 
 export const loginPath = new express.Router();
 export const userPath = new express.Router();
+export const logoutPath = new express.Router();
 
 loginPath.get("/", (req, res) => {
     const { username } = req.signedCookies;
@@ -37,7 +38,19 @@ userPath.post("/", (req, res) => {
     res.redirect("/");
 });
 
-export const USERS = [];
+logoutPath.post("/", (req, res) => {
+    res
+        .cookie("username", null, {signed: false})
+        .redirect("/");
+});
+
+export const USERS = [
+    {
+        username: "admin",
+        password: "secret?",
+        fullName: "some dude"
+    }
+];
 
 export function userMiddleware(req, res, next) {
     req.user = USERS.find(u => u.username === req.signedCookies?.username);
